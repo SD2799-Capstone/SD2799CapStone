@@ -8,6 +8,14 @@ $(document).ready(function() {
 	var disDisplay = document.getElementById("dist");
 	var angDisplay = document.getElementById("angle");
 
+	var instructionCheckoffCounter = 1;
+	// var checkoffItemsDone = {
+	// 	setUpCtrlPnt1 : false,
+	// 	useCtrlPnt2AsBackSight : false,
+	// 	layOutPntA90DegfromCntlLine : false,
+	// 	layOutPntA25FtfromCntlPnt1 : false
+	// };
+
 	// Set our global variables
 	var isDrag = false;
 	var mSelect = null;
@@ -90,17 +98,31 @@ $(document).ready(function() {
 		return deg + "d " + min + "' " + sec + "\"";
 	}
 
+	function convertDDToDMS(dd){
+		let posObject = {}
+		posObject.deg = Math.floor(dd);
+		let frac = Math.abs(dd - posObject.deg);
+		posObject.minutes = Math.abs(frac * 60) | 0;
+		posObject.seconds = Math.abs(frac * 3600 - posObject.minutes * 60) | 0;
+		return posObject;
+	}
+
 	function angle() {
 
 		if(isZSetActive){
-			var A = getXY["prism"]();
-			var B = getXY["station"]();
-			var C = {x: zSet.px, y: zSet.py};
+			let A = getXY["prism"]();
+			let B = getXY["station"]();
+			let C = {x: zSet.px, y: zSet.py};
 
-			var AB = Math.sqrt(Math.pow(B.x-A.x,2)+ Math.pow(B.y-A.y,2));
-			var BC = Math.sqrt(Math.pow(B.x-C.x,2)+ Math.pow(B.y-C.y,2));
-			var AC = Math.sqrt(Math.pow(C.x-A.x,2)+ Math.pow(C.y-A.y,2));
-			angDisplay.innerHTML = radianToDegrees( Math.acos((BC*BC+AB*AB-AC*AC)/(2*BC*AB)) );
+			let AB = Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2);
+			let BC = Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2);
+			let AC = Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2);
+
+			let angle = convertDDToDMS(radianToDegrees(Math.acos((BC + AB - AC)/(2 * Math.sqrt(BC) * Math.sqrt(AB)))));
+
+			// console.log(angle);
+
+			angDisplay.innerHTML = `${angle.deg}&deg; ${angle.minutes}' ${angle.seconds}"`
 		} else {
 			angDisplay.innerHTML = "N/A";
 		}
@@ -124,6 +146,7 @@ $(document).ready(function() {
 	function mDown(){
 		for(var src in sources){
 			if(isOverImage(src)){
+
 				mouse.xOff = mouse.x - sources[src].x;
 				mouse.yOff = mouse.y - sources[src].y;
 
@@ -135,11 +158,41 @@ $(document).ready(function() {
 		}
 	}
 
+	function displayCheckedOffItem() {
+		// this function places a checkmark off of each item in the instructions menu as each are done
+		switch (instructionCheckoffCounter) {
+			case 1:
+				document.getElementById('checkoff1').innerHTML = 'done';
+				console.log(document.getElementById('demo').innerHTML = 'got first point');
+				instructionCheckoffCounter++;
+				break;
+			case 2:
+				document.getElementById('checkoff2').innerHTML = 'done';
+				console.log(document.getElementById('demo').innerHTML = 'got second point');
+				instructionCheckoffCounter++;
+				break;
+			case 3:
+				document.getElementById('checkoff3').innerHTML = 'done';
+				console.log(document.getElementById('demo').innerHTML = 'got third point');
+				instructionCheckoffCounter++;
+				break;
+			case 4:
+				document.getElementById('checkoff4').innerHTML = 'done';
+				console.log(document.getElementById('demo').innerHTML = 'got fourth point');
+				instructionCheckoffCounter++;
+				break;
+			default:
+				// the other conditions were not met, therefore break (out a little break dance)
+				break;
+		}
+	}
+
 	function mUp(){
 		// console.log("Mouse has been released at " + mouse.x + ", " + mouse.y);
 		isDrag = false;
 		canvas.onmousemove = null;
 		mSelect = null;
+		displayCheckedOffItem();
 	}
 
 	function getMousePos(evt) {
@@ -269,4 +322,3 @@ $(document).ready(function() {
 	initialize();
 
 });
-
