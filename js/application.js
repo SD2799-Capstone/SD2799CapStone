@@ -31,7 +31,7 @@ $(document).ready(function() {
 		prism: { src: 'images/Prism.png', x: 10, y: 100 }
 	};
 
-	
+
 
 	// Start listening to resize events and
 	var x1 = sources.prism.x + (imgSize.x / 2);
@@ -71,7 +71,8 @@ $(document).ready(function() {
 		var _buf = 15;
 		for(var _cp in control){
 			if( isOverImage(mSelect) ){
-				if( distance(control[_cp],point) <= _buf ) {
+				 if( distance(control[_cp],point) <= _buf ) {
+					startTimer();
 					return getTopLeft[mSelect]({ x: control[_cp].x, y: control[_cp].y});
 				}
 			}
@@ -315,7 +316,7 @@ function isCorrect() {
 	// Runs to change to the next set of control points
 	clearCanvas();
 	if (questionNumber > 0 ) {
-		questionNumber += 1 
+		questionNumber += 1
 	}
 	changetoNextQuestion(questionNumber);
 }
@@ -350,7 +351,48 @@ nextQuestionBtn.addEventListener("click", function() {
 	}
 
 	// draw canvas.
-	// initialize();
+	initialize();
+
+
+
+	
+	//--------------
+	// TIMER
+	//--------------
+
+		var startTime;
+		var finishTime;
+		var completionTime;
+		var timeStarted = false;
+	
+
+		function startTimer(){
+			if(timeStarted == false){
+				startTime = Date.now();
+				document.getElementById("finish-btn").style.background="red";
+				document.getElementById("finish-btn").innerHTML="finish";
+			}
+			timeStarted = true;
+		}
+		
+
+       /*  STOP TIMER FUNCTION -- Waiting on Stake Point (SP1, SP2, etc) code.
+	   
+	   function stopTimer(){
+            finishTime = Date.now();
+            completionTime = (finishTime - startTime) / 1000;
+            document.getElementById("time").innerHTML = " " + completionTime + " ";
+        } */
+
+		document.getElementById("finish-btn").onclick = function () {
+			if(this.innerHTML === "finish"){
+				finishTime = Date.now();
+				completionTime = (finishTime - startTime) / 1000;
+				document.getElementById("time").innerHTML = " " + completionTime + " ";
+				this.style.display = "none";
+			}
+		}   /* end of timer section */
+		
 
 });
 
